@@ -7,10 +7,13 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed;
     public float dashSpeed = 50;
     public float rotateSpeed;
-    public float horizontalAxis;
-    public float verticalAxis;
+    private float horizontalAxis;
+    private float verticalAxis;
     public float rotate;
     public float dashVelocity;
+    public GameObject bullet;
+    public GameObject bulletSpawn;
+    public GameObject player;
     void Start()
     {
         
@@ -18,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("Dash"))
         {
             dashVelocity = dashSpeed;
         }
@@ -34,5 +37,9 @@ public class PlayerMovement : MonoBehaviour
         transform.Translate(Vector3.right * moveSpeed * horizontalAxis * Time.deltaTime);
         transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
         transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
+        if (Input.GetButtonDown("Shoot"))
+        {
+            Instantiate(bullet,bulletSpawn.transform.position,bulletSpawn.transform.rotation);
+        }
     }
 }
