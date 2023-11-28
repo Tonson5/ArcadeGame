@@ -7,6 +7,11 @@ public class AiMovement : MonoBehaviour
 {
     public NavMeshAgent agent;
     public GameObject player;
+
+    private void Start()
+    {
+        player = GameObject.Find("player");
+    }
     void Update()
     {
         agent.SetDestination(player.transform.position);
