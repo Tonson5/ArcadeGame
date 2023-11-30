@@ -14,32 +14,53 @@ public class PlayerMovement : MonoBehaviour
     public GameObject bullet;
     public GameObject bulletSpawn;
     public GameObject player;
+    public bool dashable = true;
+    public GameManager manager;
     void Start()
     {
-        
+        dashable = true;
     }
 
     void Update()
     {
-        if (Input.GetButtonDown("Dash"))
+        if (!manager.isPlayerDead)
         {
-            dashVelocity = dashSpeed;
+
+            if (Input.GetButtonDown("Dash") && dashable == true)
+            {
+                dashVelocity = dashSpeed;
+                StartCoroutine(dashCoolDown(1));
+            }
+
+
+            dashVelocity -= 60 * Time.deltaTime;
+            if (dashVelocity < 0)
+            {
+                dashVelocity = 0;
+            }
+
+
+            rotate = Input.GetAxis("rotate");
+            horizontalAxis = Input.GetAxis("Horizontal");
+            verticalAxis = Input.GetAxis("Vertical");
+            transform.Translate(Vector3.forward * moveSpeed * verticalAxis * Time.deltaTime);
+            transform.Translate(Vector3.right * moveSpeed * horizontalAxis * Time.deltaTime);
+            transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
+            transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
+            if (Input.GetButtonDown("Shoot"))
+            {
+                Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+            }
         }
-        dashVelocity -= 60 * Time.deltaTime;
-        if (dashVelocity < 0)
+        if (manager.isPlayerDead)
         {
-            dashVelocity = 0;
+            player.GetComponent<MeshRenderer>().enabled = false;
         }
-        rotate = Input.GetAxis("rotate");
-        horizontalAxis = Input.GetAxis("Horizontal");
-        verticalAxis = Input.GetAxis("Vertical");
-        transform.Translate(Vector3.forward * moveSpeed * verticalAxis * Time.deltaTime);
-        transform.Translate(Vector3.right * moveSpeed * horizontalAxis * Time.deltaTime);
-        transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
-        transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
-        if (Input.GetButtonDown("Shoot"))
-        {
-            Instantiate(bullet,bulletSpawn.transform.position,bulletSpawn.transform.rotation);
-        }
+    }
+    IEnumerator dashCoolDown(int time)
+    {
+        dashable = false;
+        yield return new WaitForSeconds(time);
+        dashable = true;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,20 +8,52 @@ public class AiMovement : MonoBehaviour
 {
     public NavMeshAgent agent;
     public GameObject player;
+    public float dashVelocity;
+    public GameManager gameManager;
+    public bool dashable;
+
+    private Rigidbody rb;
 
     private void Start()
     {
+        StartCoroutine(dash(1));
+        rb = GetComponent<Rigidbody>();
         player = GameObject.Find("player");
+        gameManager = GameObject.Find("game manager").GetComponent<GameManager>();
+    }
+    IEnumerator dash(int time)
+    {
+        dashable = false;
+        yield return new WaitForSeconds(time);
+        dashable = true;
     }
     void Update()
     {
         agent.SetDestination(player.transform.position);
+
+        if (dashable == true)
+        {
+            if (agent.velocity.magnitude == 0f)
+            {
+                dashVelocity = 30;
+            }
+            transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
+            dashVelocity -= 30 * Time.deltaTime;
+            if (dashVelocity < 0)
+            {
+                dashVelocity = 0;
+            }
+        }
     }
+   
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-        
+            gameManager.isPlayerDead = true;
+            Debug.Log("player dead");
         }
     }
+
+       
 }
