@@ -6,11 +6,13 @@ public class BulletShoot : MonoBehaviour
 {
     public Rigidbody rb;
     public float shootingForce;
+    public GameManager manager;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.AddRelativeForce(Vector3.forward * shootingForce, ForceMode.Impulse);
-        Destroy(gameObject ,1.0f);
+        Destroy(gameObject ,5.0f);
+        manager = GameObject.Find("game manager").GetComponent<GameManager>();
     }
 
 
@@ -19,6 +21,12 @@ public class BulletShoot : MonoBehaviour
         if (collision.gameObject.CompareTag("enemy"))
         {
             Destroy(collision.gameObject);
+            Destroy(gameObject);
+            manager.score += 1;
+            manager.enemies -= 1;
+        }
+        else
+        {
             Destroy(gameObject);
         }
     }

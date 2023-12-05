@@ -11,6 +11,12 @@ public class AiMovement : MonoBehaviour
     public float dashVelocity;
     public GameManager gameManager;
     public bool dashable;
+    public GameObject spawn1;
+    public GameObject spawn2;
+    public GameObject spawn3;
+    public GameObject spawn4;
+    
+
 
     private Rigidbody rb;
 
@@ -20,6 +26,12 @@ public class AiMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         player = GameObject.Find("player");
         gameManager = GameObject.Find("game manager").GetComponent<GameManager>();
+        gameManager.enemies += 1;
+
+        GameObject[] spawns = GameObject.FindGameObjectsWithTag("spawn");
+
+
+        transform.position = spawns[Random.Range(0, spawns.Length)].transform.position;
     }
     IEnumerator dash(int time)
     {
@@ -29,19 +41,22 @@ public class AiMovement : MonoBehaviour
     }
     void Update()
     {
-        agent.SetDestination(player.transform.position);
-
-        if (dashable == true)
+        if (gameManager.gameStarted)
         {
-            if (agent.velocity.magnitude == 0f)
+            agent.SetDestination(player.transform.position);
+
+            if (dashable == true)
             {
-                dashVelocity = 30;
-            }
-            transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
-            dashVelocity -= 30 * Time.deltaTime;
-            if (dashVelocity < 0)
-            {
-                dashVelocity = 0;
+                if (agent.velocity.magnitude == 0f)
+                {
+                    dashVelocity = 30;
+                }
+                transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
+                dashVelocity -= 30 * Time.deltaTime;
+                if (dashVelocity < 0)
+                {
+                    dashVelocity = 0;
+                }
             }
         }
     }

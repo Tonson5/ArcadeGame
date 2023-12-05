@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8134897033852293020}
   - component: {fileID: 8134897033852293016}
   - component: {fileID: 8134897033852293017}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,3 +129,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
   shootingForce: 20
+  manager: {fileID: 0}

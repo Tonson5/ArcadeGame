@@ -16,9 +16,12 @@ public class PlayerMovement : MonoBehaviour
     public GameObject player;
     public bool dashable = true;
     public GameManager manager;
+    public Rigidbody rb;
+    public GameObject spawn;
     void Start()
     {
         dashable = true;
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -39,17 +42,19 @@ public class PlayerMovement : MonoBehaviour
                 dashVelocity = 0;
             }
 
-
-            rotate = Input.GetAxis("rotate");
-            horizontalAxis = Input.GetAxis("Horizontal");
-            verticalAxis = Input.GetAxis("Vertical");
-            transform.Translate(Vector3.forward * moveSpeed * verticalAxis * Time.deltaTime);
-            transform.Translate(Vector3.right * moveSpeed * horizontalAxis * Time.deltaTime);
-            transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
-            transform.Translate(Vector3.forward * dashVelocity * Time.deltaTime);
-            if (Input.GetButtonDown("Shoot"))
+            if (manager.gameStarted)
             {
-                Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+                rotate = Input.GetAxis("rotate");
+                horizontalAxis = Input.GetAxis("Horizontal");
+                verticalAxis = Input.GetAxis("Vertical");
+                rb.AddForce(Vector3.forward * moveSpeed * verticalAxis);
+                rb.AddForce(Vector3.right * moveSpeed * horizontalAxis);
+                transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
+                rb.AddRelativeForce(Vector3.forward * dashVelocity, ForceMode.Impulse);
+                if (Input.GetButtonDown("Shoot"))
+                {
+                    Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+                }
             }
         }
         if (manager.isPlayerDead)
@@ -62,5 +67,17 @@ public class PlayerMovement : MonoBehaviour
         dashable = false;
         yield return new WaitForSeconds(time);
         dashable = true;
+    }
+    private void OnTriggerEnter(Collider other)
+    { 
+        if (other.gameObject.CompareTag("door"))
+        {
+            Debug.Log("touched door");
+            if (manager.enemies == 0)
+            {
+                manager.NewRoom();
+                transform.position = spawn.transform.position;
+            }
+        }
     }
 }
