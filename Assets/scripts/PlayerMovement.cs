@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -18,6 +20,16 @@ public class PlayerMovement : MonoBehaviour
     public GameManager manager;
     public Rigidbody rb;
     public GameObject spawn;
+    public GameObject dashParticleSystem;
+    public AudioSource audioSource;
+    public AudioClip door;
+    public AudioClip shoot;
+    public AudioClip dash;
+    public AudioClip death;
+    public bool deathPlayed = false;
+    public Animator animator;
+    public GameObject laser;
+    public GameObject animations;
     void Start()
     {
         dashable = true;
@@ -26,13 +38,19 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        
+        
+        manager.playerDash = dashable;
         if (!manager.isPlayerDead)
         {
-
+            animator.SetFloat("speed", Mathf.Abs(horizontalAxis + verticalAxis));
+            animations.transform.position = transform.position;
             if (Input.GetButtonDown("Dash") && dashable == true)
             {
                 dashVelocity = dashSpeed;
+                audioSource.PlayOneShot(dash);
                 StartCoroutine(dashCoolDown(1));
+                Instantiate(dashParticleSystem, transform.position,laser.transform.rotation);
             }
 
 
@@ -41,7 +59,30 @@ public class PlayerMovement : MonoBehaviour
             {
                 dashVelocity = 0;
             }
+            if (Input.GetButtonDown("Shoot") && manager.gameStarted)
+            {
+                Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+                audioSource.PlayOneShot(shoot,.50f);
+                animator.SetTrigger("shoot");
+            }
 
+        }
+        if (manager.isPlayerDead)
+        {
+            player.GetComponent<MeshRenderer>().enabled = false;
+            if (!deathPlayed)
+            {
+                audioSource.PlayOneShot(death, 1.5f);
+                deathPlayed = true;
+                Destroy(animations.gameObject);
+            }
+            
+        }
+    }
+    private void FixedUpdate()
+    {
+        if (!manager.isPlayerDead)
+        {
             if (manager.gameStarted)
             {
                 rotate = Input.GetAxis("rotate");
@@ -50,16 +91,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(Vector3.forward * moveSpeed * verticalAxis);
                 rb.AddForce(Vector3.right * moveSpeed * horizontalAxis);
                 transform.Rotate(Vector3.up * rotateSpeed * rotate * Time.deltaTime);
-                rb.AddRelativeForce(Vector3.forward * dashVelocity, ForceMode.Impulse);
-                if (Input.GetButtonDown("Shoot"))
-                {
-                    Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
-                }
+                rb.AddForce(laser.transform.forward * dashVelocity, ForceMode.Impulse);
             }
-        }
-        if (manager.isPlayerDead)
-        {
-            player.GetComponent<MeshRenderer>().enabled = false;
         }
     }
     IEnumerator dashCoolDown(int time)
@@ -77,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 manager.NewRoom();
                 transform.position = spawn.transform.position;
+                audioSource.PlayOneShot(door);
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Audio;
 
 public class AiMovement : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class AiMovement : MonoBehaviour
     public GameObject spawn2;
     public GameObject spawn3;
     public GameObject spawn4;
+    public GameObject playerDeathParticleSystem;
     
 
 
@@ -26,6 +28,7 @@ public class AiMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         player = GameObject.Find("player");
         gameManager = GameObject.Find("game manager").GetComponent<GameManager>();
+        
         gameManager.enemies += 1;
 
         GameObject[] spawns = GameObject.FindGameObjectsWithTag("spawn");
@@ -67,6 +70,8 @@ public class AiMovement : MonoBehaviour
         {
             gameManager.isPlayerDead = true;
             Debug.Log("player dead");
+            Instantiate(playerDeathParticleSystem, transform.position, transform.rotation);
+
         }
     }
 

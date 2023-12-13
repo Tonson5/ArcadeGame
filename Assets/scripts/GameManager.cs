@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public int enemies;
     public int difficulty = 1;
     public GameObject enemy;
+    public bool playerDash;
     
 
     void Start()

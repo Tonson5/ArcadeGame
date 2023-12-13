@@ -6,11 +6,13 @@ using TMPro;
 
 public class TextManager : MonoBehaviour
 {
-    public GameManager GameManager;
+    public GameManager gameManager;
     public TextMeshProUGUI restartGame;
     public TextMeshProUGUI score;
     public TextMeshProUGUI startGameText;
     public GameObject background;
+    public GameObject noDash;
+    
 
     void Start()
     {
@@ -21,23 +23,33 @@ public class TextManager : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.isPlayerDead)
+        if (gameManager.isPlayerDead)
         {
             restartGame.gameObject.SetActive(true); 
         }
 
-        if (GameManager.startGame)
+        if (gameManager.startGame)
         {
              startGameText.gameObject.SetActive(true);
             background.SetActive(true);
         }
 
-        if (!GameManager.startGame)
+        if (!gameManager.startGame)
         {
             startGameText.gameObject.SetActive(false);
             background.SetActive(false);
         }
+        if (gameManager.playerDash)
+        {
+            noDash.gameObject.SetActive(false);
+            
+        }
+        else
+        {
+            noDash.gameObject.SetActive(true);
+        }
 
-        score.text = "Score: " + GameManager.score;
+
+        score.text = "Score: " + gameManager.score;
     }
 }
