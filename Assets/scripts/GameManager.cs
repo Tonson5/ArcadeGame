@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour
             startGame=false;
             
         }
+        if (startGame && Input.GetButtonDown("exit"))
+        {
+            Debug.Log("exit");
+            Application.Quit();
+        }
     }
     public void NewRoom()
     {
